@@ -29,33 +29,47 @@ class game:
         return np.array([expected_payoff_1, expected_payoff_2])
 
     def equilibria(self):
-    """
-    find all Nash equilibria of 2-player normal form game via 
-    support enumeration.
-    """
-    n, m = self.payoff_A.shape
-    # create supports
-    for support_u in (s for s in get_powerset(n) if len(s) > 0):
-        for support_v in (s for s in get_powerset(m) if len(s) == len(support_u)):
-            # get candidate for nash equilibrium
-            try:
-                candidate_A = equilibrium_candidate(self.payoff_A, support_u, support_v)
-                candidate_B = equilibrium_candidate(self.payoff_B.T, support_v, support_u)
-                # check if best response to one another
-                if is_best_response(self.payoff_B.T, candidate_A, candidate_B) and \
-                    is_best_response(self.payoff_A, candidate_B, candidate_A):
-                        return [candidate_A, candidate_B]
-            except:
-                continue
-    return "no Nash equilibria found"
+        """
+        find all Nash equilibria of 2-player normal form game via 
+        support enumeration.
+        """
+        n, m = self.payoff_A.shape
+        # create supports
+        for support_u in (s for s in get_powerset(n) if len(s) > 0):
+            for support_v in (s for s in get_powerset(m) if len(s) == len(support_u)):
+                # get candidate for nash equilibrium
+                try:
+                    candidate_A = equilibrium_candidate(self.payoff_A, support_u, support_v)
+                    candidate_B = equilibrium_candidate(self.payoff_B.T, support_v, support_u)
+                    # check if best response to one another
+                    if is_best_response(self.payoff_B.T, candidate_A, candidate_B) and \
+                        is_best_response(self.payoff_A, candidate_B, candidate_A):
+                            return [candidate_A, candidate_B]
+                except:
+                    continue
+        return "no Nash equilibria found"
 
 
 ################
 # testing ground
 
 if __name__ == "__main__":
+    print("=== prisoners dilemma === \n")
     A = [[3, 0], [5, 1]]
     B = [[3, 5], [0, 1]]
 
     prison = game(A, B)
     print(prison)
+
+    print("\nnash equilibria:")
+    equil = prison.equilibria()
+    print(equil)
+    print("\n=== rock-paper-scissors === \n")
+    A = [[0, -1, 1], [1, 0, -1], [-1, 1, 0]]
+
+    rps = game(A)
+    print(rps)
+
+    print("\nnash equilibria:")
+    equil = rps.equilibria()
+    print(equil)
